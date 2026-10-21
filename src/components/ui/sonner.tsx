@@ -3,14 +3,24 @@
 import { useTheme } from "next-themes";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
 
-/** Toast host. Colours are pulled from the design tokens so it matches both themes. */
+/**
+ * Toast host. Colours are pulled from the design tokens so it matches both themes.
+ *
+ * Bottom-centre and raised clear of the admin's sticky save bar (about 77px
+ * tall). Every primary action in the admin — Save, Add, Delete — sits at the
+ * right, and a bottom-right toast landed exactly on it: "Resume uploaded,
+ * remember to save below" covered the very Save button it pointed to, and a
+ * second save within a few seconds clicked the toast instead.
+ */
 function Toaster(props: ToasterProps) {
   const { resolvedTheme } = useTheme();
 
   return (
     <Sonner
       theme={(resolvedTheme as ToasterProps["theme"]) ?? "system"}
-      position="bottom-right"
+      position="bottom-center"
+      offset={{ bottom: 96 }}
+      mobileOffset={{ bottom: 92, right: 16, left: 16 }}
       closeButton
       toastOptions={{
         classNames: {

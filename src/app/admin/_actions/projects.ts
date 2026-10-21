@@ -11,6 +11,7 @@ import {
   revalidatePublic,
   saved,
   str,
+  withoutPosition,
   type ActionState,
 } from "@/lib/admin/action-utils";
 import { projectSchema } from "@/lib/validations";
@@ -62,7 +63,7 @@ export async function saveProject(
   };
 
   if (id) {
-    const { error } = await supabase.from("projects").update(values).eq("id", id);
+    const { error } = await supabase.from("projects").update(withoutPosition(values)).eq("id", id);
     if (error) return projectError(error);
 
     revalidatePublic([`/projects/${parsed.data.slug}`]);
@@ -101,6 +102,15 @@ export async function duplicateProject(id: string): Promise<ActionState> {
   const baseSlug = slugify(`${String(source.slug)}-copy`);
   const slug = await findFreeSlug(supabase, baseSlug);
 
+  // The copy goes to the end of the list. Reusing the source's sort_order
+  // would tie the two, leaving their relative order up to the database.
+  const { data: last } = await supabase
+    .from("projects")
+    .select("sort_order")
+    .order("sort_order", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
   const { data: created, error: insertError } = await supabase
     .from("projects")
     .insert({
@@ -109,6 +119,7 @@ export async function duplicateProject(id: string): Promise<ActionState> {
       slug,
       published: false,
       featured: false,
+      sort_order: ((last?.sort_order as number | undefined) ?? 0) + 1,
       updated_at: new Date().toISOString(),
     })
     .select("id")

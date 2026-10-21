@@ -11,6 +11,7 @@ import {
   revalidatePublic,
   saved,
   str,
+  withoutPosition,
   type ActionState,
 } from "@/lib/admin/action-utils";
 import { certificateSchema, educationSchema, skillSchema, socialLinkSchema } from "@/lib/validations";
@@ -22,6 +23,7 @@ import { certificateSchema, educationSchema, skillSchema, socialLinkSchema } fro
  * id, and reorder by an array of ids — so they share one set of helpers.
  */
 
+/** Create or update one row. Updates leave `sort_order` alone (see withoutPosition). */
 async function upsertRow(
   table: string,
   id: string,
@@ -30,7 +32,7 @@ async function upsertRow(
   const supabase = await getAdminClient();
 
   const { error } = id
-    ? await supabase.from(table).update(values).eq("id", id)
+    ? await supabase.from(table).update(withoutPosition(values)).eq("id", id)
     : await supabase.from(table).insert(values);
 
   if (error) {

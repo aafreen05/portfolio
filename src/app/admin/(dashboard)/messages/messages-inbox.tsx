@@ -77,8 +77,14 @@ export function MessagesInbox({ messages }: { messages: Message[] }) {
 
   /** Opening a message marks it read, mirroring every mail client. */
   function openMessage(message: Message) {
-    setOpen(message);
-    if (message.status === "new") setStatus(message.id, "read");
+    if (message.status === "new") {
+      // Show it as read straight away; the dialog would otherwise keep
+      // highlighting "New" while the update is already saved.
+      setOpen({ ...message, status: "read" });
+      setStatus(message.id, "read");
+    } else {
+      setOpen(message);
+    }
   }
 
   return (

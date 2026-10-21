@@ -17,6 +17,15 @@ export function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+/**
+ * Dates render in one fixed zone — India Standard Time, where the site's
+ * owner reads them — so the server and the browser always produce the same
+ * text (no hydration mismatch) and admin timestamps match the owner's clock.
+ * Date-only values such as "2024-06-01" parse as UTC midnight, which is the
+ * same calendar day in IST.
+ */
+const TIME_ZONE = "Asia/Kolkata";
+
 export function formatDate(
   value: string | Date | null | undefined,
   options: Intl.DateTimeFormatOptions = { year: "numeric", month: "short" },
@@ -24,17 +33,19 @@ export function formatDate(
   if (!value) return "";
   const date = typeof value === "string" ? new Date(value) : value;
   if (Number.isNaN(date.getTime())) return "";
-  return new Intl.DateTimeFormat("en-IN", { timeZone: "UTC", ...options }).format(date);
+  return new Intl.DateTimeFormat("en-IN", { timeZone: TIME_ZONE, ...options }).format(date);
 }
 
+/** Date and time, labelled with its zone so it is never ambiguous. */
 export function formatDateTime(value: string | Date | null | undefined) {
-  return formatDate(value, {
+  const formatted = formatDate(value, {
     year: "numeric",
     month: "short",
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
   });
+  return formatted ? `${formatted} IST` : "";
 }
 
 /** "2 hours ago" style stamps for the admin inbox. */

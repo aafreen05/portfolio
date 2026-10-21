@@ -146,7 +146,8 @@ export async function saveResume(
 
   return upsertSingleton("resume", {
     file_url: fileUrl,
-    file_name: fileName,
+    // Clearing the URL removes the resume; don't leave its old name behind.
+    file_name: fileUrl ? fileName : null,
     version_label: versionLabel,
   });
 }

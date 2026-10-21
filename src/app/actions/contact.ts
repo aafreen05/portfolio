@@ -64,7 +64,8 @@ export async function submitContactMessage(
     name: formData.get("name"),
     email: formData.get("email"),
     subject: formData.get("subject"),
-    message: formData.get("message"),
+    // Browsers submit textarea line breaks as "\r\n"; store plain "\n".
+    message: String(formData.get("message") ?? "").replace(/\r\n?/g, "\n"),
     website: formData.get("website") ?? "",
   });
 

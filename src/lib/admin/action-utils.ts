@@ -48,11 +48,25 @@ export function revalidatePublic(paths: string[] = []) {
   for (const path of paths) revalidatePath(path);
 }
 
+/**
+ * A row's fields without `sort_order`. Updates must not write it: position is
+ * owned by the reorder actions, and a form's copy is a snapshot from when it
+ * opened, so writing it back could undo a reorder made in the meantime.
+ */
+export function withoutPosition(values: Record<string, unknown>) {
+  return Object.fromEntries(Object.entries(values).filter(([key]) => key !== "sort_order"));
+}
+
 /* --------------------------------------------------- FormData coercion --- */
 
+/**
+ * A text field, with line endings normalised to "\n". Browsers submit
+ * textarea line breaks as "\r\n" (it is in the HTML spec), which would
+ * otherwise leave stray carriage returns in stored content.
+ */
 export function str(formData: FormData, key: string): string {
   const value = formData.get(key);
-  return typeof value === "string" ? value : "";
+  return typeof value === "string" ? value.replace(/\r\n?/g, "\n") : "";
 }
 
 export function bool(formData: FormData, key: string): boolean {
