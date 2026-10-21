@@ -1,0 +1,56 @@
+name: Supabase keep-alive
+
+# Free Supabase projects are paused after about a week without database
+# activity. This job pings the database every 4 days (the 1st, 5th, 9th … of
+# each month) with curl. It is independent of the daily Vercel cron in
+# vercel.json, so if either scheduler misses a run the other still keeps the
+# project awake.
+#
+# Optional, for full independence from Vercel: add two repository secrets
+# (Settings -> Secrets and variables -> Actions):
+#   SUPABASE_URL        e.g. https://abcdefghijklm.supabase.co
+#   SUPABASE_ANON_KEY   the public anon key
+# With them the job calls Supabase directly; without them it pings through
+# the live site, which works with no setup once the site is deployed.
+# Override the site address with a repository variable SITE_URL if needed.
+#
+# Run it by hand any time: Actions -> Supabase keep-alive -> Run workflow.
+
+on:
+  schedule:
+    # 03:17 UTC — off the top of the hour, when GitHub's scheduler is busiest.
+    - cron: "17 3 */4 * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Ping Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SITE_URL: ${{ vars.SITE_URL || 'https://aafreenbegam.in' }}
+        run: |
+          set -euo pipefail
+          retry=(--retry 5 --retry-all-errors --retry-delay 30 --max-time 30)
+
+          if [ -n "${SUPABASE_URL}" ] && [ -n "${SUPABASE_ANON_KEY}" ]; then
+            echo "Calling keep_alive() directly on Supabase…"
+            curl --fail-with-body --silent --show-error "${retry[@]}" \
+              -X POST "${SUPABASE_URL%/}/rest/v1/rpc/keep_alive" \
+              -H "apikey: ${SUPABASE_ANON_KEY}" \
+              -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+              -H "Content-Type: application/json" \
+              -d '{"ping_source":"github-actions"}'
+          else
+            echo "Supabase secrets not set — pinging through ${SITE_URL}…"
+            curl --fail-with-body --silent --show-error --location "${retry[@]}" \
+              "${SITE_URL%/}/api/keep-alive?source=github-actions"
+          fi
+
+          echo
+          echo "Supabase pinged at $(date -u +%Y-%m-%dT%H:%M:%SZ)"

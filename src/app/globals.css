@@ -1,0 +1,902 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ==================================================================
+   BINARY STAR — design system
+
+   The portfolio as an observatory. Two stars in orbit carry the whole
+   palette: GOLD is design, ICE is code. Dark is the night sky; light is
+   "Porcelain" — daylight on white stone, with ink and champagne gold.
+
+   Geometry is instrument-like — hairlines, corner brackets, tick marks.
+   Both themes are authored separately, never inverted.
+================================================================== */
+
+/*
+  Registered so they can be *transitioned*. Unregistered custom
+  properties swap instantly; registered ones interpolate, which is what
+  lets the corner brackets grow smoothly into a full frame on hover.
+*/
+@property --bracket-len {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 10px;
+}
+
+@property --bracket-color {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+/* ------------------------------------------------------------------
+   LIGHT — "Porcelain": white stone, navy ink, champagne gold.
+   Bright and clean rather than aged; depth comes from soft shadows
+   instead of tinted paper.
+------------------------------------------------------------------ */
+:root {
+  --radius: 2px;
+
+  --background: #f7f6f2;
+  --foreground: #111327;
+
+  --card: #ffffff;
+  --card-foreground: #111327;
+  --popover: #ffffff;
+  --popover-foreground: #111327;
+
+  /* Alternating section band — a whisper darker than the page. */
+  --surface: #efede7;
+
+  --primary: #111327;
+  --primary-foreground: #fafaf7;
+
+  --secondary: #eeece6;
+  --secondary-foreground: #1b1d33;
+
+  --muted: #eeece6;
+  --muted-foreground: #54566d;
+
+  /* The binary pair, plus three rarer category tints. */
+  --gold: #85621a;
+  --ice: #1e4f8f;
+  --ember: #a33b17;
+  --orchid: #7c3594;
+  --sage: #2e6948;
+
+  --gold-soft: #f6eedb;
+  --ice-soft: #e8eff8;
+  --ember-soft: #f8eae3;
+  --orchid-soft: #f3e9f6;
+  --sage-soft: #e6f1ea;
+
+  --accent: var(--gold);
+  --accent-foreground: #fafaf7;
+  --accent-soft: var(--gold-soft);
+
+  --destructive: #a3261b;
+  --destructive-foreground: #fafaf7;
+  --success: var(--sage);
+  --warning: var(--ember);
+
+  --border: rgb(17 19 39 / 0.09);
+  --input: rgb(17 19 39 / 0.22);
+  --ring: var(--gold);
+
+  /* Metallic text: deep enough to hold 3:1 at display sizes on white. */
+  --gild: linear-gradient(
+    100deg,
+    #5c3f0a 0%,
+    #85621a 30%,
+    #a37d2d 52%,
+    #7a5716 76%,
+    #8f6a1f 100%
+  );
+
+  /* Champagne surface for the gilded button, carrying ink text. */
+  --gild-surface: linear-gradient(100deg, #efdcab 0%, #d5b46e 38%, #f1e2b9 62%, #caa55c 100%);
+  --gild-ink: #111327;
+
+  /* Panels float on soft, layered shadow instead of glow. */
+  --panel-shadow:
+    0 1px 2px rgb(17 19 39 / 0.04), 0 18px 44px -26px rgb(17 19 39 / 0.22);
+
+  /* Read by the particle canvas: fine ink dots, faint links, no glow. */
+  --particle: #2a2f5c;
+  --particle-link: #2a2f5c;
+  --particle-glow: 0;
+  --particle-alpha: 0.42;
+
+  --sky-top: rgb(120 140 215 / 0.12);
+  --sky-bottom: rgb(201 163 90 / 0.12);
+}
+
+/* ------------------------------------------------------------------
+   DARK — "Night": the observatory with the dome open.
+------------------------------------------------------------------ */
+.dark {
+  --background: #05060c;
+  --foreground: #eee8dc;
+
+  --card: #0b0e1a;
+  --card-foreground: #eee8dc;
+  --popover: #0e1121;
+  --popover-foreground: #eee8dc;
+
+  --surface: #080a15;
+
+  --primary: #eee8dc;
+  --primary-foreground: #07080f;
+
+  --secondary: #141829;
+  --secondary-foreground: #e6e0d4;
+
+  --muted: #141829;
+  --muted-foreground: #a3a0b5;
+
+  --gold: #e6c27a;
+  --ice: #9dd6ff;
+  --ember: #ff9571;
+  --orchid: #dcaaff;
+  --sage: #9fd8b5;
+
+  --gold-soft: #2a2213;
+  --ice-soft: #0f2233;
+  --ember-soft: #2d1710;
+  --orchid-soft: #24162e;
+  --sage-soft: #10241a;
+
+  --accent: var(--gold);
+  --accent-foreground: #0b0906;
+  --accent-soft: var(--gold-soft);
+
+  --destructive: #ff8a7a;
+  --destructive-foreground: #0b0906;
+  --success: var(--sage);
+  --warning: var(--ember);
+
+  --border: rgb(238 232 220 / 0.11);
+  --input: rgb(238 232 220 / 0.2);
+  --ring: var(--gold);
+
+  --gild: linear-gradient(
+    100deg,
+    #f7e7bf 0%,
+    #e6c27a 26%,
+    #b88a3e 50%,
+    #f3dca3 74%,
+    #c99a4b 100%
+  );
+  --gild-surface: var(--gild);
+  --gild-ink: #0b0906;
+
+  --panel-shadow: 0 30px 60px -40px rgb(0 0 0 / 0.7);
+
+  --particle: #f4efe4;
+  --particle-link: #c9d6ff;
+  --particle-glow: 1;
+  --particle-alpha: 0.9;
+
+  --sky-top: rgb(64 80 170 / 0.16);
+  --sky-bottom: rgb(230 194 122 / 0.05);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-surface: var(--surface);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-soft: var(--accent-soft);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-gold: var(--gold);
+  --color-ice: var(--ice);
+  --color-ember: var(--ember);
+  --color-orchid: var(--orchid);
+  --color-sage: var(--sage);
+  --color-gold-soft: var(--gold-soft);
+  --color-ice-soft: var(--ice-soft);
+  --color-ember-soft: var(--ember-soft);
+  --color-orchid-soft: var(--orchid-soft);
+  --color-sage-soft: var(--sage-soft);
+
+  /*
+    Six faces, six jobs:
+      serif      Playfair      — the name and headlines, the "design" voice
+      wide       Unbounded     — section labels and buttons, the "system" voice
+      sans       Manrope       — body copy and interface
+      mono       Space Mono    — coordinates, labels, the "code" voice
+      script     Parisienne    — the handwritten greeting and signature
+      condensed  Antonio       — numerals and the marquee
+  */
+  --font-serif: var(--font-playfair), "Playfair Display", Georgia, ui-serif, serif;
+  --font-wide: var(--font-unbounded), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-space-mono), ui-monospace, monospace;
+  --font-script: var(--font-parisienne), "Snell Roundhand", cursive;
+  --font-condensed: var(--font-antonio), "Arial Narrow", ui-sans-serif, sans-serif;
+  /* Alias used by admin screens and shared primitives. */
+  --font-display: var(--font-unbounded), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: 1px;
+  --radius-md: 2px;
+  --radius-lg: 3px;
+  --radius-xl: 4px;
+  --radius-2xl: 5px;
+  --radius-3xl: 6px;
+}
+
+/* ==================================================================
+   BASE
+================================================================== */
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  /*
+    Deliberately NO overflow on `html` or `body`.
+
+    Horizontal overflow is contained by a wrapper (`.page-frame`) instead.
+    `overflow-x` on <html> both (a) fails to remove off-screen content from
+    the scroll width — which widened the mobile layout viewport by 20px —
+    and (b) blocks body's overflow from reaching the viewport, so Radix's
+    scroll lock left the scrollbar in place while adding 9px of
+    compensation (the page shook) and turned <body> into the sticky
+    header's scroll container (the navbar vanished).
+  */
+  /*
+    The one and only anchor offset: clears the floating navbar (68px), for
+    hash links and for keyboard focus alike. Sections add no scroll-margin
+    of their own — the two used to stack into a 216px gap.
+  */
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 4.5rem;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    text-rendering: optimizeLegibility;
+    font-kerning: normal;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--gold) 34%, transparent);
+    color: var(--foreground);
+  }
+
+  :focus-visible {
+    @apply outline-ring outline-1 outline-offset-4;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply text-balance;
+  }
+
+  p {
+    @apply text-pretty;
+  }
+
+  @supports selector(::-webkit-scrollbar) {
+    ::-webkit-scrollbar {
+      width: 9px;
+      height: 9px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--background);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: color-mix(in oklab, var(--foreground) 20%, transparent);
+      border: 3px solid var(--background);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--gold);
+    }
+  }
+}
+
+/* ==================================================================
+   THEME TRANSITION
+   The toggle wraps the switch in a View Transition and reveals the new
+   theme as a circle growing from the button. These rules stop the
+   browser's default cross-fade from fighting that animation.
+================================================================== */
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 0;
+}
+
+::view-transition-new(root) {
+  z-index: 1;
+}
+
+/* ==================================================================
+   TYPE ROLES
+================================================================== */
+
+@layer utilities {
+  /* Contains horizontal overflow without creating a scroll container,
+     so sticky descendants and scroll locking keep working. */
+  .page-frame {
+    overflow-x: clip;
+  }
+
+  /*
+    Playfair with the optical size PINNED.
+
+    Left on `auto`, a variable serif picks its largest optical cut at
+    display sizes — the one drawn for print, whose hairlines are thinner
+    than a screen pixel. That is what erased the left stroke of the "A"
+    and the crossbar of the "H" in the name. A fixed opsz keeps every
+    hairline solid at any size.
+  */
+  .serif-display {
+    @apply font-serif;
+    font-variation-settings: "opsz" 24;
+    font-optical-sizing: none;
+    letter-spacing: -0.012em;
+    font-weight: 500;
+  }
+
+  .serif-italic {
+    @apply font-serif italic;
+    font-variation-settings: "opsz" 24;
+    font-optical-sizing: none;
+    letter-spacing: -0.008em;
+    font-weight: 400;
+  }
+
+  /* Unbounded set in wide capitals — the architectural voice. */
+  .wide-caps {
+    @apply font-wide uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+
+  /* Space Mono micro-labels. `label-mono` kept for the admin screens. */
+  .kicker,
+  .label-mono {
+    @apply font-mono text-[0.6875rem] tracking-[0.18em] text-muted-foreground uppercase;
+  }
+
+  /*
+    Parisienne in SOLID gold. Script swashes overhang their box far more
+    than upright type, and a background-clipped gradient only paints
+    inside the box — which is what left parts of letters unpainted.
+  */
+  .script {
+    @apply font-script font-normal text-gold;
+    letter-spacing: 0;
+  }
+
+  .dark .script {
+    text-shadow: 0 0 28px color-mix(in oklab, var(--gold) 28%, transparent);
+  }
+
+  /* Antonio: tall, tight numerals and marquee capitals. */
+  .condensed {
+    @apply font-condensed uppercase;
+    letter-spacing: 0;
+    font-weight: 600;
+  }
+
+  .numeric {
+    @apply font-condensed tabular-nums;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  /*
+    Metallic fill for the most important words on a view.
+
+    `background-clip: text` paints only inside the element's box, so the
+    box must contain all of the ink: generous padding (cancelled by equal
+    negative margins, so layout is unchanged) covers italic overhangs and
+    descenders, and `box-decoration-break: clone` repeats it on every line
+    when the text wraps.
+  */
+  .text-gilded {
+    background-image: var(--gild);
+    background-size: 220% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    padding: 0.12em 0.28em 0.24em;
+    margin: -0.12em -0.28em -0.24em;
+  }
+
+  .text-gilded-animate {
+    animation: gild-sweep 10s ease-in-out infinite alternate;
+  }
+
+  /* Hollow letterforms for the marquee and background numerals. */
+  .text-outline {
+    color: transparent;
+    -webkit-text-stroke: 1px color-mix(in oklab, var(--foreground) 22%, transparent);
+  }
+
+  .text-outline-gold {
+    color: transparent;
+    -webkit-text-stroke: 1px color-mix(in oklab, var(--gold) 75%, transparent);
+  }
+
+  .section-shell {
+    @apply mx-auto w-full max-w-[80rem] px-5 sm:px-8 lg:px-12;
+  }
+
+  /* ---------------------------------------------------------------
+     Instrument geometry
+  --------------------------------------------------------------- */
+
+  /*
+    Four L-shaped corner marks drawn with eight background layers, so
+    they work on any single element (including `asChild` buttons) with
+    no extra markup. Hover grows them until they meet as a full frame.
+  */
+  .brackets {
+    --bracket-color: color-mix(in oklab, currentColor 55%, transparent);
+    background-image:
+      linear-gradient(var(--bracket-color), var(--bracket-color)),
+      linear-gradient(var(--bracket-color), var(--bracket-color)),
+      linear-gradient(var(--bracket-color), var(--bracket-color)),
+      linear-gradient(var(--bracket-color), var(--bracket-color)),
+      linear-gradient(var(--bracket-color), var(--bracket-color)),
+      linear-gradient(var(--bracket-color), var(--bracket-color)),
+      linear-gradient(var(--bracket-color), var(--bracket-color)),
+      linear-gradient(var(--bracket-color), var(--bracket-color));
+    background-size:
+      var(--bracket-len) 1px,
+      1px var(--bracket-len),
+      var(--bracket-len) 1px,
+      1px var(--bracket-len),
+      var(--bracket-len) 1px,
+      1px var(--bracket-len),
+      var(--bracket-len) 1px,
+      1px var(--bracket-len);
+    background-position:
+      0 0,
+      0 0,
+      100% 0,
+      100% 0,
+      0 100%,
+      0 100%,
+      100% 100%,
+      100% 100%;
+    background-repeat: no-repeat;
+    transition:
+      --bracket-len 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+      --bracket-color 0.35s ease,
+      color 0.3s ease,
+      opacity 0.5s ease,
+      transform 0.35s ease;
+  }
+
+  .brackets:hover,
+  .brackets:focus-visible {
+    --bracket-len: 50%;
+  }
+
+  /*
+    Framed panel: hairline border, instrument fill, gold corner marks
+    that stretch on hover. The workhorse surface of the site.
+
+    No `position` here on purpose: custom utilities do not sort against
+    Tailwind's own, so setting it would silently override `fixed` on the
+    dialogs that use this class. Callers add `relative` where needed.
+  */
+  .frame {
+    border: 1px solid var(--border);
+    background-color: color-mix(in oklab, var(--card) 92%, transparent);
+    box-shadow: var(--panel-shadow);
+    --bracket-len: 14px;
+    --bracket-color: color-mix(in oklab, var(--gold) 70%, transparent);
+    background-image:
+      linear-gradient(var(--bracket-color), var(--bracket-color)),
+      linear-gradient(var(--bracket-color), var(--bracket-color)),
+      linear-gradient(var(--bracket-color), var(--bracket-color)),
+      linear-gradient(var(--bracket-color), var(--bracket-color)),
+      linear-gradient(var(--bracket-color), var(--bracket-color)),
+      linear-gradient(var(--bracket-color), var(--bracket-color)),
+      linear-gradient(var(--bracket-color), var(--bracket-color)),
+      linear-gradient(var(--bracket-color), var(--bracket-color));
+    background-size:
+      var(--bracket-len) 1px,
+      1px var(--bracket-len),
+      var(--bracket-len) 1px,
+      1px var(--bracket-len),
+      var(--bracket-len) 1px,
+      1px var(--bracket-len),
+      var(--bracket-len) 1px,
+      1px var(--bracket-len);
+    background-position:
+      -1px -1px,
+      -1px -1px,
+      calc(100% + 1px) -1px,
+      calc(100% + 1px) -1px,
+      -1px calc(100% + 1px),
+      -1px calc(100% + 1px),
+      calc(100% + 1px) calc(100% + 1px),
+      calc(100% + 1px) calc(100% + 1px);
+    background-origin: border-box;
+    background-clip: border-box;
+    background-repeat: no-repeat;
+    transition:
+      --bracket-len 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      --bracket-color 0.4s ease,
+      border-color 0.4s ease,
+      box-shadow 0.5s ease,
+      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .frame-hover:hover,
+  .frame-hover:focus-within {
+    --bracket-len: 40%;
+    --bracket-color: var(--gold);
+    border-color: color-mix(in oklab, var(--gold) 28%, var(--border));
+  }
+
+  /*
+    Light sweep across a surface — a scanning instrument. Callers supply
+    positioning; buttons already are `relative`.
+  */
+  .scan {
+    overflow: hidden;
+  }
+  .scan::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transform: translateX(-110%);
+    background: linear-gradient(
+      100deg,
+      transparent 20%,
+      color-mix(in oklab, #fff 28%, transparent) 50%,
+      transparent 80%
+    );
+  }
+  .scan:hover::after {
+    animation: scan-sweep 1.1s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .hairline {
+    background: linear-gradient(90deg, transparent, var(--border) 12%, var(--border) 88%, transparent);
+    height: 1px;
+  }
+
+  .hairline-gold {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklab, var(--gold) 55%, transparent) 50%,
+      transparent
+    );
+    height: 1px;
+  }
+
+  /* Faint engraved chart rings, used behind generated plates. */
+  .chart-rings {
+    background-image: repeating-radial-gradient(
+      circle at 50% 50%,
+      transparent 0 58px,
+      color-mix(in oklab, var(--foreground) 5%, transparent) 58px 59px
+    );
+  }
+
+  .glass {
+    background: color-mix(in oklab, var(--background) 80%, transparent);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+  }
+
+  .elevate {
+    box-shadow:
+      0 1px 0 0 color-mix(in oklab, var(--foreground) 5%, transparent),
+      0 12px 32px -18px rgb(17 19 39 / 0.35);
+  }
+
+  .elevate-lg {
+    box-shadow:
+      0 1px 0 0 color-mix(in oklab, var(--foreground) 6%, transparent),
+      0 30px 70px -30px rgb(17 19 39 / 0.45);
+  }
+
+  .fade-x {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* ==================================================================
+   KEYFRAMES
+================================================================== */
+
+@keyframes gild-sweep {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes scan-sweep {
+  to {
+    transform: translateX(110%);
+  }
+}
+
+/* Whole rings of the astrolabe, and the bodies riding them. */
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.82);
+  }
+}
+
+@keyframes marquee-x {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/*
+  A comet running down the education timeline. Applied to a wrapper the
+  full height of the rail, so percentages are exactly "top to bottom of
+  the rail" and the motion stays a compositor-only transform.
+*/
+@keyframes comet-fall {
+  0% {
+    transform: translateY(-15%);
+    opacity: 0;
+  }
+  12%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes cue-drop {
+  0% {
+    transform: translateY(-100%);
+  }
+  60%,
+  100% {
+    transform: translateY(260%);
+  }
+}
+
+@keyframes beacon {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.8;
+  }
+  80%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+@keyframes caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@layer utilities {
+  .animate-orbit {
+    animation: orbit var(--orbit-duration, 60s) linear infinite;
+    transform-box: view-box;
+    transform-origin: 50% 50%;
+  }
+  .animate-orbit-reverse {
+    animation: orbit var(--orbit-duration, 60s) linear infinite reverse;
+    transform-box: view-box;
+    transform-origin: 50% 50%;
+  }
+  .animate-twinkle {
+    animation: twinkle var(--twinkle-duration, 3.6s) ease-in-out infinite;
+  }
+  /*
+    The marquee never pauses — not on hover, not on focus. It runs on the
+    compositor (transform only), so it stays smooth while the pointer is
+    over it.
+  */
+  .animate-marquee {
+    animation: marquee-x var(--marquee-duration, 48s) linear infinite;
+    will-change: transform;
+  }
+  .animate-comet {
+    animation: comet-fall 6s cubic-bezier(0.55, 0, 0.45, 1) infinite;
+  }
+  .animate-cue {
+    animation: cue-drop 2.2s cubic-bezier(0.55, 0, 0.3, 1) infinite;
+  }
+  .animate-beacon {
+    animation: beacon 2.6s cubic-bezier(0.2, 0.8, 0.3, 1) infinite;
+  }
+  .animate-caret {
+    animation: caret 1s steps(1) infinite;
+  }
+}
+
+/* ==================================================================
+   SCROLL REVEALS
+
+   Scoped to `html.js`, added by an inline head script before first
+   paint and removed by a failsafe if the observer never starts — the
+   hidden state only applies when something is guaranteed to undo it.
+================================================================== */
+
+.js [data-reveal],
+.js [data-reveal-item] {
+  opacity: 0;
+  transform: translate3d(var(--reveal-x, 0), var(--reveal-y, 1.5rem), 0)
+    scale(var(--reveal-scale, 1));
+  filter: blur(var(--reveal-blur, 0px));
+  transition:
+    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0s);
+}
+
+.js [data-reveal-from="left"] {
+  --reveal-x: -2rem;
+  --reveal-y: 0;
+}
+.js [data-reveal-from="right"] {
+  --reveal-x: 2rem;
+  --reveal-y: 0;
+}
+.js [data-reveal-from="none"] {
+  --reveal-x: 0;
+  --reveal-y: 0;
+}
+.js [data-reveal-from="scale"] {
+  --reveal-y: 0;
+  --reveal-scale: 0.94;
+}
+.js [data-reveal-from="blur"] {
+  --reveal-y: 0.75rem;
+  --reveal-blur: 10px;
+}
+
+.js [data-reveal][data-visible="true"],
+.js [data-reveal-item][data-visible="true"] {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+/*
+  Constellation lines draw themselves in once their card is revealed.
+  `pathLength="1"` on each line normalises the dash maths.
+*/
+.js .draw-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1.8s cubic-bezier(0.65, 0, 0.35, 1);
+  transition-delay: var(--draw-delay, 0.25s);
+}
+.js [data-visible="true"] .draw-line {
+  stroke-dashoffset: 0;
+}
+
+/* Section rules extend from the left as they arrive. */
+.js .draw-rule {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+}
+.js [data-visible="true"] .draw-rule {
+  transform: scaleX(1);
+}
+
+/* ==================================================================
+   REDUCED MOTION — stillness everywhere, content fully present.
+================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .js [data-reveal],
+  .js [data-reveal-item] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+
+  .js .draw-line {
+    stroke-dashoffset: 0;
+  }
+  .js .draw-rule {
+    transform: none;
+  }
+
+  .animate-orbit,
+  .animate-orbit-reverse,
+  .animate-twinkle,
+  .animate-marquee,
+  .animate-comet,
+  .animate-cue,
+  .animate-beacon,
+  .animate-caret,
+  .text-gilded-animate {
+    animation: none !important;
+  }
+}
